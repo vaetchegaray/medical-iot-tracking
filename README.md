@@ -11,6 +11,19 @@ Hyperledger Composer
 
 Seguir documentación oficial: https://hyperledger.github.io/composer/latest/installing/installing-index
 
+### Description
+
+This business network defines:
+
+**Participants**
+`Grower` `Importer` `Shipper`
+
+**Assets**
+`Contract` `Shipment`
+
+**Transactions**
+`TemperatureReading` `ShipmentReceived` `SetupDemo`
+
 ## Authors
 
 * **Vicente Etchegaray** - [vaetchegaray](https://github.com/vaetchegaray)
