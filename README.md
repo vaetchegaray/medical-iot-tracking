@@ -11,6 +11,13 @@ Hyperledger Composer
 
 Seguir documentación oficial: https://hyperledger.github.io/composer/latest/installing/installing-index
 
+### BasicSetup Playground
+
+- Clonar este repositorio
+- Crear bussiness network archive (.bna) con composer archive create -t dir -n `composer archive create -t dir -n .`
+- Elegir la opción de importar nueva red en Playground
+- Subir archivo .bna
+
 ### Description
 
 This business network defines:
