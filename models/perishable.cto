@@ -1,145 +1,172 @@
-/**
-  * A business network for shipping perishable goods
-  * The cargo is temperature controlled and contracts
-  * can be negociated based on the temperature
-  * readings received for the cargo
-  */
-
-namespace org.acme.shipping.perishable
-
-/**
- * The type of perishable product being shipped
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-enum ProductType {
-  o BANANAS
-  o APPLES
-  o PEARS
-  o PEACHES
-  o COFFEE
+
+/**
+ * Cadena de negocio que muestra como enfermeros, bodegueros y estafetas
+ * definen contratos para llevar registro de suministros de bodega y su
+ * uso, así como facilitar su solicitud y automatizar procesos de eventos
+ * particulares.
+ */
+
+namespace org.acme.shipping.supplychain
+
+/**
+ * Tipo de insumo a ser entregado
+ * Definido en esta parte para simplificar su identificación.
+ */
+enum TipoProducto {
+  o INSULINA
+  o ADRELANINA
+  o GASA
 }
 
 /**
- * The status of a shipment
+ * El estado de un encargo
  */
-enum ShipmentStatus {
-  o CREATED
-  o IN_TRANSIT
-  o ARRIVED
+enum EstadoEncargo {
+  o SOLICITADO
+  o EN_CAMINO
+  o RECIBIDO
 }
 
 /**
- * Directions of the compass
+ * La urgencia con que se pide un encargo
+ * ALTA significa que se requiere inmediatamente
+ * MEDIA es que se requiere durante el transcurso de la jornada (mañana o tarde)
+ * BAJA es que ser requiere durante el día
  */
-enum CompassDirection {
-  o N
-  o S
-  o E
-  o W
+enum UrgenciaEncargo {
+  o ALTA
+  o MEDIA
+  o BAJA
 }
+
 
 /**
  * An abstract transaction that is related to a Shipment
  */
-abstract transaction ShipmentTransaction {
-    --> Shipment shipment
+abstract transaction EncargoTransaction {
+  --> Encargo shipment
 }
 
 /**
- * An temperature reading for a shipment. E.g. received from a
- * device within a temperature controlled shipping container
+ * Notificación que el encargo ha sido solicitado
  */
-transaction TemperatureReading extends ShipmentTransaction {
-  o Double centigrade
+transaction EncargoSolicitado extends EncargoTransaction {
 }
 
 /**
- * A GPS reading for a shipment. E.g. received from a device
- * within a shipping container
+ * Notificación que el encargo ha sido recibido
  */
-transaction GpsReading extends ShipmentTransaction {
-  o String readingTime
-  o String readingDate
-  o String latitude
-  o CompassDirection latitudeDir
-  o String longitude
-  o CompassDirection longitudeDir
+transaction EncargoRecibido extends EncargoTransaction {
+  --> TrabajadorClinica owner
 }
 
 /**
- * A notification that a shipment has been received by the
- * importer and that funds should be transferred from the importer
- * to the grower to pay for the shipment.
+ * Asset suministro puede ser usado de dos maneras
+ * 1. Para crear la lista de suministros a pedir a la bodega
+ * 2. Para llevar registro del stock de suministro en un determinado servicio
  */
-transaction ShipmentReceived extends ShipmentTransaction {
+asset Suministro identified by suministroId {
+  o String suministroId
+  o TipoProducto type
+  o Long cantidad
+  --> Bodega servicio optional
 }
 
 /**
- * A shipment being tracked as an asset on the ledger
+ * Un encargo (shipment) realizado a la bodega
  */
-asset Shipment identified by shipmentId {
-  o String shipmentId
-  o ProductType type
-  o ShipmentStatus status
-  o Long unitCount
+asset Encargo identified by encargoId {
+  o String encargoId
+  o EstadoEncargo status
+  o UrgenciaEncargo urgencia
+  o Suministro[] listaPedido
+  --> Enfermero poseedor optional
   --> Contract contract
-  o TemperatureReading[] temperatureReadings optional
-  o GpsReading[] gpsReadings optional
 }
 
 /**
- * Defines a contract between a Grower and an Importer to ship using
- * a Shipper, paying a set unit price. The unit price is multiplied by
- * a penality factor proportional to the deviation from the min and max
- * negociated temperatures for the shipment.
+ * Registra los medicamentos solicitados a bodega
+ * Ver si es necesario para poder usar
+ */
+asset Request identified by requestId {
+  o String requestId
+  o Suministro[] listaPedido
+}
+
+/**
+ * Define el contrato de intercambio de
+ * productos entre los agentes
  */
 asset Contract identified by contractId {
   o String contractId
-  --> Grower grower
-  --> Shipper shipper
-  --> Importer importer
+  --> Enfermero enfermero
+  --> Bodeguero bodeguero
+  --> Estafeta estafeta
   o DateTime arrivalDateTime
-  o Double unitPrice
-  o Double minTemperature
-  o Double maxTemperature
-  o Double minPenaltyFactor
-  o Double maxPenaltyFactor
 }
 
 /**
- * A concept for a simple street address
+ * Un concept para representar datos
+ * personales de identificación
  */
-concept Address {
-  o String city optional
-  o String country
-  o String street optional
-  o String zip optional
-}
-
-/**
- * An abstract participant type in this business network
- */
-abstract participant Business identified by email {
+concept PersonalData {
+  o String nombre
+  o String apellido
+  o String cargo
   o String email
-  o Address address
-  o Double accountBalance
+}
+
+participant Bodega identified by servicioId {
+  o String servicioId
+  o Suministro[] stock
 }
 
 /**
- * A Grower is a type of participant in the network
+ * Un abstract participant type la cadena de negocios
  */
-participant Grower extends Business {
+abstract participant TrabajadorClinica identified by trabajadorId {
+  o String trabajadorId
+  o PersonalData data
 }
 
 /**
- * A Shipper is a type of participant in the network
+ * Un Enfermero es un trabajor de la clínica involucrado en la cadena de insumos
  */
-participant Shipper extends Business {
+participant Enfermero extends TrabajadorClinica {
+  --> Bodega servicioTrabajador
 }
 
 /**
- * An Importer is a type of participant in the network
+ * Un Estafeta es un trabajor de la clínica involucrado en la cadena de insumos
  */
-participant Importer extends Business {
+participant Estafeta extends TrabajadorClinica {
+}
+
+/**
+ * Un Bodeguero es un trabajor de la clínica involucrado en la cadena de insumos
+ */
+participant Bodeguero extends TrabajadorClinica {
+}
+
+/**
+ * Un participante Paciente usado para listar el registro de cobros
+ */
+participant Paciente identified by pacienteId {
+  o String pacienteId
+  o Long cobroPendiente
 }
 
 /**
@@ -148,19 +175,19 @@ participant Importer extends Business {
 transaction SetupDemo {
 }
 
-/**
- * An event - when the temperature goes outside the agreed-upon boundaries
- */
-event TemperatureThresholdEvent {
-  o String message
-  o Double temperature
-  --> Shipment shipment
-}
 
 /**
- * An event - when the ship arrives at the port
+ * Avisos:
+ * 1. Nuevo pedido en bodega
+ * 2. Pedido recibido
  */
-event ShipmentInPortEvent {
+
+event ShipmentPedido {
   o String message
-  --> Shipment shipment
+  --> Encargo shipment
+}
+
+event ShipmentRecibido {
+  o String message
+  --> Encargo shipment
 }

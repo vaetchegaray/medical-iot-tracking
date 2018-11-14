@@ -1,0 +1,13 @@
+query drugs_stock{
+  description: "Select drugs in param to verify stock"
+  statement:
+      SELECT org.acme.shipping.supplychain.Suministro
+          WHERE ( suministroId == _$drugIdParam)
+}
+
+query pedido_solicitado{
+  description: "Select request in param to verify list of drugs"
+  statement:
+      SELECT org.acme.shipping.supplychain.Request
+          WHERE ( requestId == _$requestIdParam)
+}
