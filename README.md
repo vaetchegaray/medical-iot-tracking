@@ -4,7 +4,7 @@
 
 La cadena de negocio define los siguientes contratos:
 
-1. Cada semana se hará una renovación automática de los suministros de la bodega de uso directo de los enfermeros, dichos suministros pasaran a ser posesión de un servicio, completando un stock mínimo. El transporte será realizado por un estafeta.
+1. Cada cierto tiempo se hará una renovación automática de los suministros de la bodega de uso directo de los enfermeros, dichos suministros pasaran a ser posesión de un servicio, completando un stock mínimo. El transporte será realizado por un estafeta.
 2. Una enfermera tiene la facultad de cheuqear el stock del servicio y solicitar nuevos suministros, específicos o la renovación de stock completo dependiendo de la disponibilidad, con diferentes grados de urgencia. La bodega tiene el deber de chequear el stock de suplementos y realizar la transferencia de bienes al servicio correspondiente. Un estafeta estará a cargo de transportar dichos suministros, llevando un registro del tiempo requerido en la tarea y actualización de los estados de solicitudes.
 3. Cada vez que un enfermero haga uso de un suministro será restado del stock del servicio y podrá ser registrado su valor equivalente como cobro al paciente.
 
@@ -17,13 +17,13 @@ La cadena de negocios genera los siguientes documentos:
 Se definen las siguientes entidades:
 
 **Participantes**
-`Enfermero` `Bodeguero` `Estafeta` `Paciente`
+`Enfermero` `Bodeguero` `Estafeta` `Paciente` `Bodegas` 
 
 **Assets**
-`Suministro` `Encargo`
+`Encargo`
 
 **Transactions**
-`EncargoRecibido` `ActualizacionStock` `VerificacionEncargo` `SetupDemo`
+`EncargoRecibido` `ActualizacionStock` `SetupDemo`
 
 Para probar esta cadena de negocio en la ventana **Test**:
 

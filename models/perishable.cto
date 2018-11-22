@@ -27,8 +27,9 @@ namespace org.acme.shipping.supplychain
  */
 enum TipoProducto {
   o INSULINA
-  o ADRELANINA
+  o ADRENALINA
   o GASA
+  o JERINGA
 }
 
 /**
@@ -63,26 +64,22 @@ abstract transaction EncargoTransaction {
 /**
  * Notificación que el encargo ha sido solicitado
  */
-transaction EncargoSolicitado extends EncargoTransaction {
+transaction CrearEncargo {
+  o String encargoId
+  o UrgenciaEncargo urgencia
+  o listaStock listaPedido
+  --> Contract contract
 }
 
 /**
  * Notificación que el encargo ha sido recibido
  */
 transaction EncargoRecibido extends EncargoTransaction {
-  --> TrabajadorClinica owner
 }
 
-/**
- * Asset suministro puede ser usado de dos maneras
- * 1. Para crear la lista de suministros a pedir a la bodega
- * 2. Para llevar registro del stock de suministro en un determinado servicio
- */
-asset Suministro identified by suministroId {
-  o String suministroId
-  o TipoProducto type
-  o Long cantidad
-  --> Bodega servicio optional
+concept listaStock {
+  o TipoProducto[] insumos
+  o Long[] cantidades
 }
 
 /**
@@ -92,18 +89,8 @@ asset Encargo identified by encargoId {
   o String encargoId
   o EstadoEncargo status
   o UrgenciaEncargo urgencia
-  o Suministro[] listaPedido
-  --> Enfermero poseedor optional
+  o listaStock listaPedido
   --> Contract contract
-}
-
-/**
- * Registra los medicamentos solicitados a bodega
- * Ver si es necesario para poder usar
- */
-asset Request identified by requestId {
-  o String requestId
-  o Suministro[] listaPedido
 }
 
 /**
@@ -113,8 +100,8 @@ asset Request identified by requestId {
 asset Contract identified by contractId {
   o String contractId
   --> Enfermero enfermero
-  --> Bodeguero bodeguero
-  --> Estafeta estafeta
+  --> Bodega receptor
+  --> Bodega emisor
   o DateTime arrivalDateTime
 }
 
@@ -126,12 +113,12 @@ concept PersonalData {
   o String nombre
   o String apellido
   o String cargo
-  o String email
+  o String mail
 }
 
 participant Bodega identified by servicioId {
   o String servicioId
-  o Suministro[] stock
+  o listaStock stock
 }
 
 /**
@@ -146,8 +133,10 @@ abstract participant TrabajadorClinica identified by trabajadorId {
  * Un Enfermero es un trabajor de la clínica involucrado en la cadena de insumos
  */
 participant Enfermero extends TrabajadorClinica {
-  --> Bodega servicioTrabajador
+  //Quizá si se puede modelar con una interacción
+  o String ServicioID optional
 }
+
 
 /**
  * Un Estafeta es un trabajor de la clínica involucrado en la cadena de insumos
@@ -182,12 +171,17 @@ transaction SetupDemo {
  * 2. Pedido recibido
  */
 
-event ShipmentPedido {
+event ShipmentSolicitado {
   o String message
   --> Encargo shipment
 }
 
 event ShipmentRecibido {
+  o String message
+  --> Encargo shipment
+}
+
+event ShipmentCreated {
   o String message
   --> Encargo shipment
 }
