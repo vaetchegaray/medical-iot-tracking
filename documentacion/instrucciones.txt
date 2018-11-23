@@ -1,0 +1,37 @@
+npm install -g composer-cli@0.20
+npm install -g composer-rest-server@0.20
+npm install -g generator-hyperledger-composer@0.20
+npm install -g yo
+npm install -g composer-playground@0.20
+mkdir ~/fabric-dev-servers && cd ~/fabric-dev-servers
+
+curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.tar.gz
+tar -xvf fabric-dev-servers.tar.gz
+    cd ~/fabric-dev-servers
+    export FABRIC_VERSION=hlfv12
+    ./startFabric.sh
+    ./createPeerAdminCard.sh
+cd ~/fabric-dev-servers
+export FABRIC_VERSION=hlfv12
+./downloadFabric.sh
+
+-------------------------------------------------------------------------
+
+Teardown
+
+docker kill $(docker ps -q)
+docker rm $(docker ps -aq)
+docker rmi $(docker images dev-* -q)
+
+----------------------------------------------------------------------
+Iniciar Bussiness Network
+
+./startFabric.sh
+./createPeerAdminCard.sh
+
+composer network install --archiveFile medical-iot-tracking@0.1.12.bna --card PeerAdmin@hlfv1
+composer network start --networkName medical-iot-tracking --networkVersion 0.1.12 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file medical-iot-admin.card
+
+composer card import --file medical-iot-admin.card
+
+composer network ping --card admin@medical-iot-tracking
