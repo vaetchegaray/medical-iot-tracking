@@ -3,7 +3,7 @@
     "composer": "^0.15.0"
   },
   "name": "medical-iot-tracking",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Supply Chain demo for Medical institution",
   "scripts": {
     "clean": "rm -Rf ./node_modules ./dist ./composer-logs ./out",
