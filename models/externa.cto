@@ -1,0 +1,166 @@
+/**
+  * A business network for shipping perishable goods
+  * The cargo is temperature controlled and contracts
+  * can be negociated based on the temperature
+  * readings received for the cargo
+  */
+
+namespace org.acme.shipping.externalchain
+
+import org.acme.shipping.supplychain.TipoProducto
+import org.acme.shipping.supplychain.EstadoEncargo
+import org.acme.shipping.supplychain.Bodega
+
+
+/**
+ * Directions of the compass
+ */
+enum CompassDirection {
+  o N
+  o S
+  o E
+  o W
+}
+
+/**
+ * An abstract transaction that is related to a Shipment
+ */
+abstract transaction ShipmentTransaction {
+    --> Shipment shipment
+}
+
+/**
+ * An temperature reading for a shipment. E.g. received from a
+ * device within a temperature controlled shipping container
+ */
+transaction TemperatureReading extends ShipmentTransaction {
+  o Double centigrade
+}
+
+/**
+ * A GPS reading for a shipment. E.g. received from a device
+ * within a shipping container
+ */
+transaction GpsReading extends ShipmentTransaction {
+  o String readingTime
+  o String readingDate
+  o String latitude
+  o CompassDirection latitudeDir
+  o String longitude
+  o CompassDirection longitudeDir
+}
+
+/**
+ * A notification that a shipment has been received by the
+ * importer and that funds should be transferred from the importer
+ * to the grower to pay for the shipment.
+ */
+transaction EncargoRecibido_Bodega extends ShipmentTransaction {
+}
+
+/**
+ * Notificación que el encargo ha sido solicitado
+ */
+transaction SolicitarPedidoProveedor {
+  o String shipmentId
+  o listaStock listaPedido
+  o TemperatureReading[] temperatureReadings optional
+  o GpsReading[] gpsReadings optional
+  --> Contract_Proveedores_Clinica contract
+}
+
+concept listaStock {
+  o TipoProducto[] insumos
+  o Long[] cantidades
+}
+
+concept PreciosAcordados {
+  o TipoProducto[] productos
+  o Double[] precios
+}
+
+/**
+ * A shipment being tracked as an asset on the ledger
+ */
+asset Shipment identified by shipmentId {
+  o String shipmentId
+  o EstadoEncargo status
+  o listaStock listaPedido
+  o TemperatureReading[] temperatureReadings optional
+  o GpsReading[] gpsReadings optional
+  --> Contract_Proveedores_Clinica contract
+}
+
+/**
+ * Defines a contract between a Grower and an Importer to ship using
+ * a Shipper, paying a set unit price. The unit price is multiplied by
+ * a penality factor proportional to the deviation from the min and max
+ * negociated temperatures for the shipment.
+ */
+asset Contract_Proveedores_Clinica identified by contractId {
+  o String contractId
+  --> Proveedor origen
+  --> Transportista transporte
+  --> Bodega clinica
+  o DateTime arrivalDateTime
+  o PreciosAcordados Unitprices
+  o Double minTemperature
+  o Double maxTemperature
+  o Double minPenaltyFactor
+  o Double maxPenaltyFactor
+}
+
+/**
+ * A concept for a simple street address
+ */
+concept Address {
+  o String city optional
+  o String country
+  o String street optional
+  o String zip optional
+}
+
+/**
+ * An abstract participant type in this business network
+ */
+abstract participant Business identified by email {
+  o String email
+  o Address address
+  o Double accountBalance
+}
+
+/**
+ * A Grower is a type of participant in the network
+ */
+participant Proveedor extends Business {
+  o listaStock stock
+}
+
+/**
+ * A Shipper is a type of participant in the network
+ */
+participant Transportista extends Business {
+}
+
+
+/**
+ * An event - when the temperature goes outside the agreed-upon boundaries
+ */
+event TemperatureThresholdEvent {
+  o String message
+  o Double temperature
+  --> Shipment shipment
+}
+
+/**
+ * An event - when the ship arrives at the port
+ */
+event ShipmentInPortEvent {
+  o String message
+  --> Shipment shipment
+}
+
+event ShipmentCreated {
+  o String message
+  --> Shipment shipment
+}

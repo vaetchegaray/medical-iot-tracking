@@ -1,0 +1,187 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Cadena de negocio que muestra como enfermeros, bodegueros y estafetas
+ * definen contratos para llevar registro de suministros de bodega y su
+ * uso, así como facilitar su solicitud y automatizar procesos de eventos
+ * particulares.
+ */
+
+namespace org.acme.shipping.supplychain
+
+/**
+ * Tipo de insumo a ser entregado
+ * Definido en esta parte para simplificar su identificación.
+ */
+enum TipoProducto {
+  o INSULINA
+  o ADRENALINA
+  o GASA
+  o JERINGA
+}
+
+/**
+ * El estado de un encargo
+ */
+enum EstadoEncargo {
+  o SOLICITADO
+  o EN_CAMINO
+  o RECIBIDO
+}
+
+/**
+ * La urgencia con que se pide un encargo
+ * ALTA significa que se requiere inmediatamente
+ * MEDIA es que se requiere durante el transcurso de la jornada (mañana o tarde)
+ * BAJA es que ser requiere durante el día
+ */
+enum UrgenciaEncargo {
+  o ALTA
+  o MEDIA
+  o BAJA
+}
+
+/**
+ * An abstract transaction that is related to a Shipment
+ */
+abstract transaction EncargoTransaction {
+  --> Encargo shipment
+}
+
+/**
+ * Notificación que el encargo ha sido solicitado
+ */
+transaction SolicitarPedidoBodega {
+  o String encargoId
+  o UrgenciaEncargo urgencia
+  o listaStock listaPedido
+  --> Contract_Interna contract
+}
+
+/**
+ * Notificación que el encargo ha sido recibido
+ */
+transaction EncargoRecibido_Servicio extends EncargoTransaction {
+}
+
+concept listaStock {
+  o TipoProducto[] insumos
+  o Long[] cantidades
+}
+
+/**
+ * Un encargo (shipment) realizado a la bodega
+ */
+asset Encargo identified by encargoId {
+  o String encargoId
+  o EstadoEncargo status
+  o UrgenciaEncargo urgencia
+  o listaStock listaPedido
+  --> Contract_Interna contract
+}
+
+/**
+ * Define el contrato de intercambio de
+ * productos entre los agentes
+ */
+asset Contract_Interna identified by contractId {
+  o String contractId
+  --> Enfermero enfermero
+  --> Bodega receptor
+  --> Bodega emisor
+  o DateTime arrivalDateTime
+}
+
+/**
+ * Un concept para representar datos
+ * personales de identificación
+ */
+concept PersonalData {
+  o String nombre
+  o String apellido
+  o String cargo
+  o String mail
+}
+
+participant Bodega identified by servicioId {
+  o String servicioId
+  o listaStock stock
+  o Double accountBalance optional
+}
+
+/**
+ * Un abstract participant type la cadena de negocios
+ */
+abstract participant TrabajadorClinica identified by trabajadorId {
+  o String trabajadorId
+  o PersonalData data
+}
+
+/**
+ * Un Enfermero es un trabajor de la clínica involucrado en la cadena de insumos
+ */
+participant Enfermero extends TrabajadorClinica {
+  //Quizá si se puede modelar con una interacción
+  o String ServicioID optional
+}
+
+
+/**
+ * Un Estafeta es un trabajor de la clínica involucrado en la cadena de insumos
+ */
+participant Estafeta extends TrabajadorClinica {
+}
+
+/**
+ * Un Bodeguero es un trabajor de la clínica involucrado en la cadena de insumos
+ */
+participant Bodeguero extends TrabajadorClinica {
+}
+
+/**
+ * Un participante Paciente usado para listar el registro de cobros
+ */
+participant Paciente identified by pacienteId {
+  o String pacienteId
+  o Long cobroPendiente
+}
+
+/**
+ * JUST FOR INITIALIZING A DEMO
+ */
+transaction SetupDemo {
+}
+
+
+/**
+ * Avisos:
+ * 1. Nuevo pedido en bodega
+ * 2. Pedido recibido
+ */
+
+event ShipmentSolicitado {
+  o String message
+  --> Encargo shipment
+}
+
+event ShipmentRecibido {
+  o String message
+  --> Encargo shipment
+}
+
+event ShipmentCreated {
+  o String message
+  --> Encargo shipment
+}
