@@ -17,39 +17,39 @@
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="addTransactionModalLabel">Create Transaction</h4>
-        <p class="modal-intro">Enter the required values below.</p>
+        <p class="modal-intro">Ingrese los datos de la transacción</p>
       </div>
       <form [formGroup]="myForm">
         <div class="modal-body">
 
 
-          
 
-            
+
+
               <div class="form-group text-left">
                 <label for="centigrade">centigrade</label>
-                
-                  <input formControlName="centigrade" type="number" step='any' class="form-control">
-                
-              </div>
-            
-          
 
-            
+                  <input formControlName="centigrade" type="number" step='any' class="form-control">
+
+              </div>
+
+
+
+
               <div class="form-group text-left">
                 <label for="shipment">shipment</label>
-                
+
                     <textarea formControlName="shipment" class="form-control" rows="3"></textarea>
-                
+
               </div>
-            
-          
 
-            
-          
 
-            
-          
+
+
+
+
+
+
 
         </div>
         <div class="modal-footer">
@@ -79,19 +79,19 @@
           When invoked, this transaction will have the following attributes:
           <br>
           <ul>
-            
-              
+
+
                 <li><span class="attribute"><b>centigrade</b></span></li>
-              
-            
-              
+
+
+
                 <li><span class="attribute"><b>shipment</b></span></li>
-              
-            
-              
-            
-              
-            
+
+
+
+
+
+
           </ul>
         </div>
       </div>
@@ -99,4 +99,3 @@
     </div>
   </div>
 </div>
-
