@@ -26,7 +26,8 @@ Parámetros con '#' representan los parámetros que varían.
     ]
   },
   "contract": "resource:org.acme.shipping.externalchain.Contract_Proveedores_Clinica#CON_002"
-} ~~~~
+}
+~~~~
 
 - Respuesta
 
