@@ -1,6 +1,0 @@
-query selectTipoProducto {
-  description: "Seleccionar todos los tipos de productos"
-  statement:
-      SELECT org.acme.shipping.supplychain.TipoProducto
-        
-}
