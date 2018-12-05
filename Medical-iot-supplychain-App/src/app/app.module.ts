@@ -25,6 +25,7 @@ import { ShipmentComponent } from './Shipment/Shipment.component';
 import { Contract_Proveedores_ClinicaComponent } from './Contract_Proveedores_Clinica/Contract_Proveedores_Clinica.component';
 import { EncargoComponent } from './Encargo/Encargo.component';
 import { Contract_InternaComponent } from './Contract_Interna/Contract_Interna.component';
+import { DemoComponent } from './Demo/Demo.component'
 
 import { ProveedorComponent } from './Proveedor/Proveedor.component';
 import { TransportistaComponent } from './Transportista/Transportista.component';
@@ -63,7 +64,8 @@ import { SetupDemoComponent } from './SetupDemo/SetupDemo.component';
     SolicitarPedidoProveedorComponent,
     SolicitarPedidoBodegaComponent,
     EncargoRecibido_ServicioComponent,
-    SetupDemoComponent
+    SetupDemoComponent,
+    DemoComponent
   ],
   imports: [
     BrowserModule,
