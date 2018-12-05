@@ -1,0 +1,8 @@
+/** Sample queries for Medical Tracking business network
+*/
+
+query selectShipment {
+  description: "Select all shipements"
+  statement:
+      SELECT org.acme.shipping.externalchain.Shipment
+}
