@@ -21,25 +21,25 @@ import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import * as sinon from 'sinon';
 import { DataService } from '../data.service';
-import { ShipmentComponent } from './Shipment.component';
-import { ShipmentService } from './Shipment.service';
+import { DemoComponent } from './Demo.component';
+import { DemoService } from './Demo.service';
 import { Observable } from 'rxjs'
 
-describe('ShipmentComponent', () => {
-  let component: ShipmentComponent;
-  let fixture: ComponentFixture<ShipmentComponent>;
+describe('DemoComponent', () => {
+  let component: DemoComponent;
+  let fixture: ComponentFixture<DemoComponent>;
 
-  let mockShipmentService;
+  let mockDemoService;
   let mockDataService
 
   beforeEach(async(() => {
 
-    mockShipmentService = sinon.createStubInstance(ShipmentService);
-    mockShipmentService.getAll.returns([]);
+    mockDemoService = sinon.createStubInstance(DemoService);
+    mockDemoService.getAll.returns([]);
     mockDataService = sinon.createStubInstance(DataService);
 
     TestBed.configureTestingModule({
-      declarations: [ ShipmentComponent ],
+      declarations: [ DemoComponent ],
       imports: [
         BrowserModule,
         FormsModule,
@@ -47,12 +47,12 @@ describe('ShipmentComponent', () => {
         HttpModule
       ],
       providers: [
-        {provide: ShipmentService, useValue: mockShipmentService },
+        {provide: DemoService, useValue: mockDemoService },
         {provide: DataService, useValue: mockDataService },
       ]
     });
 
-    fixture = TestBed.createComponent(ShipmentComponent);
+    fixture = TestBed.createComponent(DemoComponent);
     component = fixture.componentInstance;
 
   }));
@@ -61,9 +61,9 @@ describe('ShipmentComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should update the table when a Shipment is added', fakeAsync(() => {
+  it('should update the table when a Demo is added', fakeAsync(() => {
     let loadAllSpy = sinon.stub(component, 'loadAll');
-    sinon.stub(component.serviceShipment, 'addAsset').returns(new Observable<any>(observer => {
+    sinon.stub(component.serviceDemo, 'addAsset').returns(new Observable<any>(observer => {
       observer.next('');
       observer.complete();
     }));
@@ -71,22 +71,22 @@ describe('ShipmentComponent', () => {
     component.addAsset({});
 
     tick();
-    
+
     expect(loadAllSpy.callCount).toBe(1);
 
     loadAllSpy.restore();
   }));
 
-  it('should update the table when a Shipment is updated', fakeAsync(() => {
+  it('should update the table when a Demo is updated', fakeAsync(() => {
     let loadAllSpy = sinon.stub(component, 'loadAll');
-    sinon.stub(component.serviceShipment, 'updateAsset').returns(new Observable<any>(observer => {
+    sinon.stub(component.serviceDemo, 'updateAsset').returns(new Observable<any>(observer => {
       observer.next('');
       observer.complete();
     }));
 
     // mock form to be passed to the update function
     let mockForm = new FormGroup({
-      shipmentId: new FormControl('id')
+      DemoId: new FormControl('id')
     });
 
     component.updateAsset(mockForm);
@@ -98,15 +98,15 @@ describe('ShipmentComponent', () => {
     loadAllSpy.restore();
   }));
 
-  it('should update the table when a Shipment is deleted', fakeAsync(() => {
+  it('should update the table when a Demo is deleted', fakeAsync(() => {
     let loadAllSpy = sinon.stub(component, 'loadAll');
-    sinon.stub(component.serviceShipment, 'deleteAsset').returns(new Observable<any>(observer => {
+    sinon.stub(component.serviceDemo, 'deleteAsset').returns(new Observable<any>(observer => {
       observer.next('');
       observer.complete();
     }));
 
     component.setId('id');
-    
+
     component.deleteAsset();
 
     tick();
@@ -114,6 +114,6 @@ describe('ShipmentComponent', () => {
     expect(loadAllSpy.callCount).toBe(1);
 
     loadAllSpy.restore();
-  }));  
+  }));
 
 });

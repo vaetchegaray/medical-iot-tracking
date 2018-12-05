@@ -14,16 +14,16 @@
 
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { ShipmentService } from './Shipment.service';
+import { DemoService } from './Demo.service';
 import 'rxjs/add/operator/toPromise';
 
 @Component({
-  selector: 'app-shipment',
-  templateUrl: './Shipment.component.html',
-  styleUrls: ['./Shipment.component.css'],
-  providers: [ShipmentService]
+  selector: 'app-Demo',
+  templateUrl: './Demo.component.html',
+  styleUrls: ['./Demo.component.css'],
+  providers: [DemoService]
 })
-export class ShipmentComponent implements OnInit {
+export class DemoComponent implements OnInit {
 
   myForm: FormGroup;
 
@@ -32,16 +32,16 @@ export class ShipmentComponent implements OnInit {
   private currentId;
   private errorMessage;
 
-  shipmentId = new FormControl('', Validators.required);
+  DemoId = new FormControl('', Validators.required);
   status = new FormControl('', Validators.required);
   listaPedido = new FormControl('', Validators.required);
   temperatureReadings = new FormControl('', Validators.required);
   gpsReadings = new FormControl('', Validators.required);
   contract = new FormControl('', Validators.required);
 
-  constructor(public serviceShipment: ShipmentService, fb: FormBuilder) {
+  constructor(public serviceDemo: DemoService, fb: FormBuilder) {
     this.myForm = fb.group({
-      shipmentId: this.shipmentId,
+      DemoId: this.DemoId,
       status: this.status,
       listaPedido: this.listaPedido,
       temperatureReadings: this.temperatureReadings,
@@ -56,7 +56,7 @@ export class ShipmentComponent implements OnInit {
 
   loadAll(): Promise<any> {
     const tempList = [];
-    return this.serviceShipment.getAll()
+    return this.serviceDemo.getAll()
     .toPromise()
     .then((result) => {
       this.errorMessage = null;
@@ -103,8 +103,8 @@ export class ShipmentComponent implements OnInit {
 
   addAsset(form: any): Promise<any> {
     this.asset = {
-      $class: 'org.acme.shipping.externalchain.Shipment',
-      'shipmentId': this.shipmentId.value,
+      $class: 'org.acme.shipping.externalchain.Demo',
+      'DemoId': this.DemoId.value,
       'status': this.status.value,
       'listaPedido': this.listaPedido.value,
       'temperatureReadings': this.temperatureReadings.value,
@@ -113,7 +113,7 @@ export class ShipmentComponent implements OnInit {
     };
 
     this.myForm.setValue({
-      'shipmentId': null,
+      'DemoId': null,
       'status': null,
       'listaPedido': null,
       'temperatureReadings': null,
@@ -121,12 +121,12 @@ export class ShipmentComponent implements OnInit {
       'contract': null
     });
 
-    return this.serviceShipment.addAsset(this.asset)
+    return this.serviceDemo.addAsset(this.asset)
     .toPromise()
     .then(() => {
       this.errorMessage = null;
       this.myForm.setValue({
-        'shipmentId': null,
+        'DemoId': null,
         'status': null,
         'listaPedido': null,
         'temperatureReadings': null,
@@ -147,7 +147,7 @@ export class ShipmentComponent implements OnInit {
 
   updateAsset(form: any): Promise<any> {
     this.asset = {
-      $class: 'org.acme.shipping.externalchain.Shipment',
+      $class: 'org.acme.shipping.externalchain.Demo',
       'status': this.status.value,
       'listaPedido': this.listaPedido.value,
       'temperatureReadings': this.temperatureReadings.value,
@@ -155,7 +155,7 @@ export class ShipmentComponent implements OnInit {
       'contract': this.contract.value
     };
 
-    return this.serviceShipment.updateAsset(form.get('shipmentId').value, this.asset)
+    return this.serviceDemo.updateAsset(form.get('DemoId').value, this.asset)
     .toPromise()
     .then(() => {
       this.errorMessage = null;
@@ -175,7 +175,7 @@ export class ShipmentComponent implements OnInit {
 
   deleteAsset(): Promise<any> {
 
-    return this.serviceShipment.deleteAsset(this.currentId)
+    return this.serviceDemo.deleteAsset(this.currentId)
     .toPromise()
     .then(() => {
       this.errorMessage = null;
@@ -198,12 +198,12 @@ export class ShipmentComponent implements OnInit {
 
   getForm(id: any): Promise<any> {
 
-    return this.serviceShipment.getAsset(id)
+    return this.serviceDemo.getAsset(id)
     .toPromise()
     .then((result) => {
       this.errorMessage = null;
       const formObject = {
-        'shipmentId': null,
+        'DemoId': null,
         'status': null,
         'listaPedido': null,
         'temperatureReadings': null,
@@ -211,10 +211,10 @@ export class ShipmentComponent implements OnInit {
         'contract': null
       };
 
-      if (result.shipmentId) {
-        formObject.shipmentId = result.shipmentId;
+      if (result.DemoId) {
+        formObject.DemoId = result.DemoId;
       } else {
-        formObject.shipmentId = null;
+        formObject.DemoId = null;
       }
 
       if (result.status) {
@@ -263,7 +263,7 @@ export class ShipmentComponent implements OnInit {
 
   resetForm(): void {
     this.myForm.setValue({
-      'shipmentId': null,
+      'DemoId': null,
       'status': null,
       'listaPedido': null,
       'temperatureReadings': null,
