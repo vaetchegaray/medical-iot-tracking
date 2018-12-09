@@ -5,27 +5,12 @@
   * readings received for the cargo
   */
 
-namespace org.acme.shipping.perishable
+namespace org.acme.shipping.externalchain
 
-/**
- * The type of perishable product being shipped
- */
-enum ProductType {
-  o BANANAS
-  o APPLES
-  o PEARS
-  o PEACHES
-  o COFFEE
-}
+import org.acme.shipping.supplychain.TipoProducto
+import org.acme.shipping.supplychain.EstadoEncargo
+import org.acme.shipping.supplychain.Bodega
 
-/**
- * The status of a shipment
- */
-enum ShipmentStatus {
-  o CREATED
-  o IN_TRANSIT
-  o ARRIVED
-}
 
 /**
  * Directions of the compass
@@ -70,7 +55,28 @@ transaction GpsReading extends ShipmentTransaction {
  * importer and that funds should be transferred from the importer
  * to the grower to pay for the shipment.
  */
-transaction ShipmentReceived extends ShipmentTransaction {
+transaction EncargoRecibido_Bodega extends ShipmentTransaction {
+}
+
+/**
+ * Notificación que el encargo ha sido solicitado
+ */
+transaction SolicitarPedidoProveedor {
+  o String shipmentId
+  o listaStock listaPedido
+  o TemperatureReading[] temperatureReadings optional
+  o GpsReading[] gpsReadings optional
+  --> Contract_Proveedores_Clinica contract
+}
+
+concept listaStock {
+  o TipoProducto[] insumos
+  o Long[] cantidades
+}
+
+concept PreciosAcordados {
+  o TipoProducto[] productos
+  o Double[] precios
 }
 
 /**
@@ -78,12 +84,11 @@ transaction ShipmentReceived extends ShipmentTransaction {
  */
 asset Shipment identified by shipmentId {
   o String shipmentId
-  o ProductType type
-  o ShipmentStatus status
-  o Long unitCount
-  --> Contract contract
+  o EstadoEncargo status
+  o listaStock listaPedido
   o TemperatureReading[] temperatureReadings optional
   o GpsReading[] gpsReadings optional
+  --> Contract_Proveedores_Clinica contract
 }
 
 /**
@@ -92,13 +97,13 @@ asset Shipment identified by shipmentId {
  * a penality factor proportional to the deviation from the min and max
  * negociated temperatures for the shipment.
  */
-asset Contract identified by contractId {
+asset Contract_Proveedores_Clinica identified by contractId {
   o String contractId
-  --> Grower grower
-  --> Shipper shipper
-  --> Importer importer
+  --> Proveedor origen
+  --> Transportista transporte
+  --> Bodega clinica
   o DateTime arrivalDateTime
-  o Double unitPrice
+  o PreciosAcordados Unitprices
   o Double minTemperature
   o Double maxTemperature
   o Double minPenaltyFactor
@@ -127,26 +132,16 @@ abstract participant Business identified by email {
 /**
  * A Grower is a type of participant in the network
  */
-participant Grower extends Business {
+participant Proveedor extends Business {
+  o listaStock stock
 }
 
 /**
  * A Shipper is a type of participant in the network
  */
-participant Shipper extends Business {
+participant Transportista extends Business {
 }
 
-/**
- * An Importer is a type of participant in the network
- */
-participant Importer extends Business {
-}
-
-/**
- * JUST FOR INITIALIZING A DEMO
- */
-transaction SetupDemo {
-}
 
 /**
  * An event - when the temperature goes outside the agreed-upon boundaries
@@ -161,6 +156,11 @@ event TemperatureThresholdEvent {
  * An event - when the ship arrives at the port
  */
 event ShipmentInPortEvent {
+  o String message
+  --> Shipment shipment
+}
+
+event ShipmentCreated {
   o String message
   --> Shipment shipment
 }
