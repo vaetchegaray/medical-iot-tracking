@@ -54,11 +54,3 @@ proxyConfig.forEach((element) => {
 server.listen(appEnv.port, function () {
     console.log('server starting on ' + appEnv.url);
 });
-
-let now = new Date();
-now.setMinutes(10);  // set the date to be time you want to query from
-
-let q1 = businessNetworkConnection.buildQuery('SELECT org.hyperledger.composer.system.HistorianRecord ' +
-                                              'WHERE (transactionTimestamp > _$justnow)');
-
-await businessNetworkConnection.query(q1,{justnow:now});

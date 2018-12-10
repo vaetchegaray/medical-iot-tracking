@@ -42,6 +42,8 @@ import { SolicitarPedidoBodegaComponent } from './SolicitarPedidoBodega/Solicita
 import { EncargoRecibido_ServicioComponent } from './EncargoRecibido_Servicio/EncargoRecibido_Servicio.component';
 import { SetupDemoComponent } from './SetupDemo/SetupDemo.component';
 
+import { AllTransactionsComponent } from './AllTransactions/AllTransactions.component';
+
   @NgModule({
   declarations: [
     AppComponent,
@@ -64,6 +66,7 @@ import { SetupDemoComponent } from './SetupDemo/SetupDemo.component';
     SolicitarPedidoBodegaComponent,
     EncargoRecibido_ServicioComponent,
     SetupDemoComponent,
+    AllTransactionsComponent,
   ],
   imports: [
     BrowserModule,
